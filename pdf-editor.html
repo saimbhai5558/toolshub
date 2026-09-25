@@ -1,308 +1,331 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ur">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Ribbon PDF Studio - ToolsHub</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PDF.js -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
-    <!-- PDF-lib -->
-    <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
-    <style>
-        .excel-tab { padding: 4px 14px; cursor: pointer; border-bottom: 2px solid transparent; font-size: 12px; }
-        .excel-tab.active { border-bottom: 2px solid #107c41; color: #107c41; font-weight: bold; background: white; }
-        .ribbon-group { display: flex; align-items: center; border-right: 1px solid #d1d5db; padding-right: 10px; margin-right: 10px; height: 55px; }
-        .ribbon-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #374151; transition: background 0.2s; cursor: pointer; }
-        .ribbon-btn:hover { background-color: #e5e7eb; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PDF Editor - ToolsHub</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+<script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;}
+  .ribbon-btn{display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:6px 12px;border-radius:6px;font-size:11px;background:#f3f4f6;
+    border:1px solid #e5e7eb;cursor:pointer;min-width:52px;}
+  .ribbon-btn span.icon{font-size:16px;line-height:1;margin-bottom:2px;}
+  .ribbon-btn:hover:not(:disabled){background:#e5e7eb;}
+  .ribbon-btn:disabled{opacity:.4;cursor:not-allowed;}
+  #inlineEditor{outline:none;}
+</style>
 </head>
-<body class="bg-gray-200 min-h-screen font-sans select-none flex flex-col">
+<body class="bg-gray-100 min-h-screen flex flex-col">
 
-    <!-- Top Excel Title Bar -->
-    <div class="bg-[#107c41] text-white px-3 py-1 flex justify-between items-center text-xs shadow-sm">
-        <div class="flex items-center space-x-2">
-            <span class="font-bold text-sm">📊 Excel PDF Studio</span>
-            <span class="bg-[#0b5c2f] px-2 py-0.5 rounded text-[10px]">Book1.xlsx - Excel (PDF Mode)</span>
-        </div>
-        <div>
-            <a href="index.html" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition">Home Hub</a>
-        </div>
+<header class="bg-emerald-700 text-white px-4 py-2.5 flex justify-between items-center shadow">
+  <span class="font-bold">📄 ToolsHub — PDF Editor</span>
+  <a href="index.html" class="text-sm bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition">Home</a>
+</header>
+
+<!-- Toolbar -->
+<div class="bg-white border-b shadow-sm p-2 flex flex-wrap items-center gap-2">
+  <button id="undoBtn" class="ribbon-btn" disabled><span class="icon">↩</span>Undo</button>
+  <button id="redoBtn" class="ribbon-btn" disabled><span class="icon">↪</span>Redo</button>
+  <div class="w-px h-10 bg-gray-300 mx-1"></div>
+
+  <div class="flex flex-col">
+    <label class="text-[10px] text-gray-500">Font</label>
+    <select id="fontFamily" class="border rounded px-2 py-1 text-sm">
+      <option value="Helvetica">Helvetica</option>
+      <option value="TimesRoman">Times New Roman</option>
+      <option value="Courier">Courier New</option>
+    </select>
+  </div>
+  <div class="flex flex-col">
+    <label class="text-[10px] text-gray-500">Size</label>
+    <select id="fontSize" class="border rounded px-2 py-1 text-sm w-16">
+      <option value="10">10</option>
+      <option value="12" selected>12</option>
+      <option value="14">14</option>
+      <option value="16">16</option>
+      <option value="20">20</option>
+      <option value="24">24</option>
+      <option value="32">32</option>
+    </select>
+  </div>
+  <div class="flex flex-col">
+    <label class="text-[10px] text-gray-500">Color</label>
+    <input type="color" id="textColor" value="#000000" class="h-8 w-10 border rounded cursor-pointer">
+  </div>
+
+  <div class="w-px h-10 bg-gray-300 mx-1"></div>
+  <div class="flex flex-col">
+    <label class="text-[10px] text-gray-500">Page</label>
+    <select id="pageSelect" class="border rounded px-2 py-1 text-sm"></select>
+  </div>
+
+  <div class="ml-auto flex gap-2">
+    <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-2 rounded text-sm font-medium" disabled>🗑 Clear Page</button>
+    <button id="downloadBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded text-sm font-medium" disabled>⬇ Download PDF</button>
+  </div>
+</div>
+
+<main class="flex-1 container mx-auto p-4">
+  <div id="uploadBox" class="bg-white border-2 border-dashed border-gray-300 rounded-xl p-8 text-center">
+    <p class="mb-3 text-gray-600 font-medium">Apni PDF file select karein (kisi bhi size — A4, POS 80mm, letter, sab chalega)</p>
+    <input type="file" id="pdfUpload" accept="application/pdf" class="mx-auto block text-sm file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-emerald-50 file:text-emerald-700 file:font-semibold hover:file:bg-emerald-100 cursor-pointer">
+  </div>
+  <p id="statusMsg" class="text-sm text-gray-500 mt-2"></p>
+
+  <div id="canvasWrap" class="relative mt-4 hidden bg-gray-300 rounded-lg overflow-auto p-4 flex justify-center" style="max-height:75vh;">
+    <div id="canvasRelative" class="relative inline-block bg-white shadow-lg">
+      <canvas id="pdfCanvas"></canvas>
     </div>
+  </div>
+  <p class="text-xs text-gray-500 mt-2">💡 PDF par jahan click karenge wahan text box khulega — likh kar Enter dabayein. Pehle se likhe hue text par click karke usay edit karein, ya khali chhor kar Enter dabayein to wo delete ho jayega.</p>
+</main>
 
-    <!-- Excel Ribbon Menu Header -->
-    <div class="bg-[#f3f3f3] border-b border-gray-300 shadow-sm">
-        <!-- Tabs Navigation -->
-        <div class="flex px-2 text-gray-700 bg-[#fbfbfb] border-b border-gray-200 overflow-x-auto">
-            <div class="excel-tab">File</div>
-            <div class="excel-tab active" onclick="switchTab(event, 'homeTabContent')">Home</div>
-            <div class="excel-tab" onclick="switchTab(event, 'insertTabContent')">Insert</div>
-            <div class="excel-tab" onclick="switchTab(event, 'pageLayoutTabContent')">Page Layout</div>
-            <div class="excel-tab" onclick="switchTab(event, 'formulasTabContent')">Formulas</div>
-            <div class="excel-tab" onclick="switchTab(event, 'dataTabContent')">Data</div>
-            <div class="excel-tab" onclick="switchTab(event, 'reviewTabContent')">Review</div>
-            <div class="excel-tab" onclick="switchTab(event, 'viewTabContent')">View</div>
-        </div>
+<script>
+let pdfBytes = null, pdfDoc = null, pageNum = 1, scale = 1;
+let annotations = {};      // { pageNum: [ {x0,y0,text,size,color,font} ] }  -- x0,y0 are at scale=1 (top-left origin)
+let undoStack = [], redoStack = [];
 
-        <!-- Ribbon Toolbar Body (Excel Style Groups) -->
-        <div id="homeTabContent" class="p-2 bg-[#f3f3f3] flex flex-wrap items-center gap-1 text-xs">
-            
-            <!-- Clipboard Group -->
-            <div class="ribbon-group">
-                <div class="flex flex-col space-y-1">
-                    <button id="undoBtn" class="ribbon-btn h-6 flex-row gap-1" title="Undo Last Action">
-                        <span class="text-sm font-bold text-blue-600">↩</span> Undo
-                    </button>
-                    <button id="redoBtn" class="ribbon-btn h-6 flex-row gap-1" title="Redo Action">
-                        <span class="text-sm font-bold text-blue-600">↪</span> Redo
-                    </button>
-                </div>
-            </div>
+const canvas = document.getElementById('pdfCanvas');
+const ctx = canvas.getContext('2d');
+const canvasRelative = document.getElementById('canvasRelative');
+const canvasWrap = document.getElementById('canvasWrap');
 
-            <!-- Font Formatting Group -->
-            <div class="ribbon-group">
-                <div class="flex flex-col space-y-1">
-                    <div class="flex items-center space-x-1">
-                        <select id="fontFamily" class="border border-gray-300 rounded px-1.5 py-0.5 text-xs bg-white w-28">
-                            <option value="Helvetica">Aptos Narrow</option>
-                            <option value="Helvetica">Helvetica</option>
-                            <option value="Times-Roman">Times New Roman</option>
-                            <option value="Courier">Courier New</option>
-                        </select>
-                        <select id="fontSize" class="border border-gray-300 rounded px-1 py-0.5 text-xs bg-white w-14 text-center">
-                            <option value="10">10px</option>
-                            <option value="12" selected>12px</option>
-                            <option value="14">14px</option>
-                            <option value="16">16px</option>
-                            <option value="18">18px</option>
-                            <option value="24">24px</option>
-                        </select>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <div class="flex items-center space-x-1">
-                            <span class="text-[10px] font-semibold text-gray-500">Color:</span>
-                            <input type="color" id="textColor" value="#000000" class="h-5 w-7 border border-gray-300 rounded cursor-pointer p-0 bg-white" title="Text Color">
-                        </div>
-                    </div>
-                </div>
-            </div>
+pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
-            <!-- Text Input & Navigation Group -->
-            <div class="ribbon-group">
-                <div class="flex flex-col space-y-1">
-                    <label class="text-[10px] font-semibold text-gray-600">PDF Add Text:</label>
-                    <div class="flex items-center space-x-2">
-                        <input type="text" id="textInput" value="Verified Text" class="border border-gray-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#107c41] w-36 bg-white">
-                        <select id="pageSelect" class="border border-gray-300 rounded px-2 py-0.5 text-xs bg-white" title="Select Page"></select>
-                    </div>
-                </div>
-            </div>
+const fontMap = { Helvetica: 'Helvetica', TimesRoman: '"Times New Roman", serif', Courier: '"Courier New", monospace' };
 
-            <!-- Action & Output Group (Excel Cells / Download) -->
-            <div class="flex items-center gap-2 ml-auto">
-                <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold shadow transition flex items-center gap-1">
-                    🗑️ Clear Page
-                </button>
-                <button id="savePdfBtn" class="bg-[#107c41] hover:bg-[#0b5c2f] text-white px-4 py-1.5 rounded text-xs font-semibold shadow transition flex items-center gap-1">
-                    📥 Download Edited PDF
-                </button>
-            </div>
-        </div>
-    </div>
+function setStatus(msg){ document.getElementById('statusMsg').innerText = msg; }
+function setToolsEnabled(has){
+  document.getElementById('clearBtn').disabled = !has;
+  document.getElementById('downloadBtn').disabled = !has;
+}
 
-    <!-- Main Workspace Area -->
-    <main class="flex-grow container mx-auto px-4 py-4 max-w-5xl flex flex-col">
-        <!-- Upload Card -->
-        <div id="uploadSection" class="bg-white rounded-lg shadow-md p-6 mb-4 text-center border border-gray-300">
-            <h2 class="text-base font-bold text-gray-800 mb-2">Apni PDF File Select Karein</h2>
-            <input type="file" id="pdfUpload" accept="application/pdf" class="block mx-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-[#107c41] hover:file:bg-green-100 cursor-pointer">
-        </div>
+document.getElementById('pdfUpload').addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  setStatus('PDF load ho rahi hai...');
+  try {
+    const buf = await file.arrayBuffer();
+    pdfBytes = new Uint8Array(buf);
+    pdfDoc = await pdfjsLib.getDocument({ data: pdfBytes.slice() }).promise;
 
-        <!-- Canvas PDF Viewer & Editor -->
-        <div id="editorSection" class="relative bg-gray-500 border border-gray-400 shadow-xl rounded-lg overflow-auto flex-grow flex justify-center p-4 hidden min-h-[650px]">
-            <canvas id="pdfCanvas" class="shadow-2xl cursor-crosshair bg-white"></canvas>
-        </div>
-    </main>
+    const sel = document.getElementById('pageSelect');
+    sel.innerHTML = '';
+    for (let i = 1; i <= pdfDoc.numPages; i++) {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `Page ${i} / ${pdfDoc.numPages}`;
+      sel.appendChild(opt);
+    }
 
-    <!-- Script Application Logic -->
-    <script>
-        let loadedPdfBytes = null;
-        let pdfDoc = null;
-        let pageNum = 1;
-        let scale = 1.35; // Optimized scale for clear text display
-        let canvas = document.getElementById('pdfCanvas');
-        let ctx = canvas.getContext('2d');
-        let annotations = {};
-        let redoStack = {};
+    annotations = {}; undoStack = []; redoStack = []; pageNum = 1;
+    canvasWrap.classList.remove('hidden');
+    setToolsEnabled(true);
+    updateUndoRedoButtons();
+    await renderPage(pageNum);
+    setStatus('PDF kamyabi se load ho gayi ✔');
+  } catch (err) {
+    console.error(err);
+    setStatus('');
+    alert('PDF load nahi ho saki. File corrupt ya password-protected ho sakti hai.');
+  }
+});
 
-        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+document.getElementById('pageSelect').addEventListener('change', function () {
+  pageNum = parseInt(this.value);
+  renderPage(pageNum);
+});
 
-        function switchTab(evt, tabId) {
-            // Simulated tab switching behavior like Excel ribbon
-            let tabs = document.querySelectorAll('.excel-tab');
-            tabs.forEach(t => t.classList.remove('active'));
-            evt.currentTarget.classList.add('active');
-        }
+async function renderPage(num) {
+  const page = await pdfDoc.getPage(num);
+  const baseViewport = page.getViewport({ scale: 1 });
+  const availableWidth = Math.max(canvasWrap.clientWidth - 40, 300);
+  const maxWidth = Math.min(availableWidth, 950);
+  scale = maxWidth / baseViewport.width;
 
-        document.getElementById('pdfUpload').addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+  const viewport = page.getViewport({ scale });
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  canvasRelative.style.width = viewport.width + 'px';
+  canvasRelative.style.height = viewport.height + 'px';
 
-            const reader = new FileReader();
-            reader.onload = async function() {
-                try {
-                    loadedPdfBytes = new Uint8Array(this.result);
-                    const loadingTask = pdfjsLib.getDocument(loadedPdfBytes);
-                    pdfDoc = await loadingTask.promise;
-                    
-                    let pageSelect = document.getElementById('pageSelect');
-                    pageSelect.innerHTML = '';
-                    for (let i = 1; i <= pdfDoc.numPages; i++) {
-                        let opt = document.createElement('option');
-                        opt.value = i;
-                        opt.innerText = `Page ${i} / ${pdfDoc.numPages}`;
-                        pageSelect.appendChild(opt);
-                    }
+  await page.render({ canvasContext: ctx, viewport }).promise;
+  drawAnnotations();
+}
 
-                    annotations = {};
-                    redoStack = {};
-                    pageNum = 1;
-                    document.getElementById('editorSection').classList.remove('hidden');
-                    renderPage(pageNum);
-                } catch (err) {
-                    alert("PDF load karne mein error aaya hai.");
-                    console.error(err);
-                }
-            };
-            reader.readAsArrayBuffer(file);
-        });
+function drawAnnotations() {
+  const list = annotations[pageNum] || [];
+  list.forEach(a => {
+    ctx.font = `${a.size * scale}px ${fontMap[a.font]}`;
+    ctx.fillStyle = a.color;
+    ctx.textBaseline = 'top';
+    ctx.fillText(a.text, a.x0 * scale, a.y0 * scale);
+  });
+}
 
-        document.getElementById('pageSelect').addEventListener('change', function() {
-            pageNum = parseInt(this.value);
-            renderPage(pageNum);
-        });
+function hitTest(xCanvas, yCanvas) {
+  const list = annotations[pageNum] || [];
+  for (let i = list.length - 1; i >= 0; i--) {
+    const a = list[i];
+    ctx.font = `${a.size * scale}px ${fontMap[a.font]}`;
+    const w = ctx.measureText(a.text).width;
+    const h = a.size * scale * 1.2;
+    const x = a.x0 * scale, y = a.y0 * scale;
+    if (xCanvas >= x && xCanvas <= x + w && yCanvas >= y && yCanvas <= y + h) return i;
+  }
+  return -1;
+}
 
-        async function renderPage(num) {
-            const page = await pdfDoc.getPage(num);
-            const viewport = page.getViewport({ scale: scale });
-            canvas.height = viewport.height;
-            canvas.width = viewport.width;
+canvas.addEventListener('click', (e) => {
+  if (!pdfDoc) return;
+  const rect = canvas.getBoundingClientRect();
+  const xCanvas = e.clientX - rect.left;
+  const yCanvas = e.clientY - rect.top;
+  const hitIdx = hitTest(xCanvas, yCanvas);
+  openEditor(xCanvas, yCanvas, hitIdx);
+});
 
-            const renderContext = {
-                canvasContext: ctx,
-                viewport: viewport
-            };
-            await page.render(renderContext).promise;
-            drawAnnotations(num);
-        }
+function openEditor(xCanvas, yCanvas, editIdx) {
+  const old = document.getElementById('inlineEditor');
+  if (old) old.remove();
 
-        function drawAnnotations(pNum) {
-            if (annotations[pNum]) {
-                annotations[pNum].forEach(item => {
-                    ctx.font = `${item.size * scale}px ${item.fontFamily}`;
-                    ctx.fillStyle = item.color;
-                    ctx.fillText(item.text, item.x, item.y);
-                });
-            }
-        }
+  if (!annotations[pageNum]) annotations[pageNum] = [];
+  const list = annotations[pageNum];
+  const editing = editIdx >= 0;
+  const current = editing ? list[editIdx] : null;
 
-        canvas.addEventListener('click', function(event) {
-            if (!pdfDoc) return;
-            const rect = canvas.getBoundingClientRect();
-            const x = event.clientX - rect.left;
-            const y = event.clientY - rect.top;
-            const text = document.getElementById('textInput').value || "Sample";
-            const size = parseInt(document.getElementById('fontSize').value);
-            const color = document.getElementById('textColor').value;
-            const fontFamily = document.getElementById('fontFamily').value;
+  const size = current ? current.size : parseInt(document.getElementById('fontSize').value);
+  const color = current ? current.color : document.getElementById('textColor').value;
+  const font = current ? current.font : document.getElementById('fontFamily').value;
+  const x0 = current ? current.x0 : xCanvas / scale;
+  const y0 = current ? current.y0 : yCanvas / scale;
 
-            if (!annotations[pageNum]) {
-                annotations[pageNum] = [];
-            }
-            annotations[pageNum].push({ text, x, y, size, color, fontFamily });
-            
-            if (!redoStack[pageNum]) redoStack[pageNum] = [];
-            redoStack[pageNum] = []; // Clear redo stack on new addition
+  const input = document.createElement('input');
+  input.id = 'inlineEditor';
+  input.type = 'text';
+  input.value = current ? current.text : '';
+  input.style.position = 'absolute';
+  input.style.left = (x0 * scale) + 'px';
+  input.style.top = (y0 * scale) + 'px';
+  input.style.font = `${size * scale}px ${fontMap[font]}`;
+  input.style.color = color;
+  input.style.border = '1px dashed #10b981';
+  input.style.background = 'rgba(255,255,255,0.9)';
+  input.style.padding = '0 2px';
+  input.style.minWidth = '80px';
+  input.style.zIndex = 50;
+  canvasRelative.appendChild(input);
+  input.focus();
 
-            renderPage(pageNum);
-        });
+  let done = false;
+  function commit() {
+    if (done) return;
+    done = true;
+    const val = input.value.trim();
+    input.remove();
+    pushUndo();
+    if (editing) {
+      if (val === '') list.splice(editIdx, 1);
+      else list[editIdx].text = val;
+    } else if (val !== '') {
+      list.push({ text: val, x0, y0, size, color, font });
+    } else {
+      undoStack.pop(); // nothing actually changed
+      updateUndoRedoButtons();
+    }
+    renderPage(pageNum);
+  }
 
-        document.getElementById('undoBtn').addEventListener('click', function() {
-            if (annotations[pageNum] && annotations[pageNum].length > 0) {
-                if (!redoStack[pageNum]) redoStack[pageNum] = [];
-                let removed = annotations[pageNum].pop();
-                redoStack[pageNum].push(removed);
-                renderPage(pageNum);
-            }
-        });
+  input.addEventListener('keydown', (ev) => {
+    if (ev.key === 'Enter') { ev.preventDefault(); commit(); }
+    if (ev.key === 'Escape') { done = true; input.remove(); }
+  });
+  input.addEventListener('blur', commit);
+}
 
-        document.getElementById('redoBtn').addEventListener('click', function() {
-            if (redoStack[pageNum] && redoStack[pageNum].length > 0) {
-                if (!annotations[pageNum]) annotations[pageNum] = [];
-                let restored = redoStack[pageNum].pop();
-                annotations[pageNum].push(restored);
-                renderPage(pageNum);
-            }
-        });
+function pushUndo() {
+  undoStack.push(JSON.stringify(annotations));
+  redoStack = [];
+  updateUndoRedoButtons();
+}
+function updateUndoRedoButtons() {
+  document.getElementById('undoBtn').disabled = undoStack.length === 0;
+  document.getElementById('redoBtn').disabled = redoStack.length === 0;
+}
 
-        document.getElementById('clearBtn').addEventListener('click', function() {
-            if (annotations[pageNum]) {
-                annotations[pageNum] = [];
-                redoStack[pageNum] = [];
-                renderPage(pageNum);
-            }
-        });
+document.getElementById('undoBtn').addEventListener('click', () => {
+  if (undoStack.length === 0) return;
+  redoStack.push(JSON.stringify(annotations));
+  annotations = JSON.parse(undoStack.pop());
+  updateUndoRedoButtons();
+  renderPage(pageNum);
+});
+document.getElementById('redoBtn').addEventListener('click', () => {
+  if (redoStack.length === 0) return;
+  undoStack.push(JSON.stringify(annotations));
+  annotations = JSON.parse(redoStack.pop());
+  updateUndoRedoButtons();
+  renderPage(pageNum);
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  if (!(annotations[pageNum] && annotations[pageNum].length)) return;
+  pushUndo();
+  annotations[pageNum] = [];
+  renderPage(pageNum);
+});
 
-        document.getElementById('savePdfBtn').addEventListener('click', async function() {
-            if (!loadedPdfBytes) {
-                alert("Pehle koi PDF file upload karein!");
-                return;
-            }
+document.getElementById('downloadBtn').addEventListener('click', async () => {
+  if (!pdfBytes) return;
+  try {
+    const { PDFDocument, rgb, StandardFonts } = PDFLib;
+    const doc = await PDFDocument.load(pdfBytes);
+    const pages = doc.getPages();
+    const fontCache = {};
+    async function getFont(name) {
+      if (fontCache[name]) return fontCache[name];
+      const stdMap = { Helvetica: StandardFonts.Helvetica, TimesRoman: StandardFonts.TimesRoman, Courier: StandardFonts.Courier };
+      const f = await doc.embedFont(stdMap[name] || StandardFonts.Helvetica);
+      fontCache[name] = f;
+      return f;
+    }
 
-            try {
-                const { PDFDocument, rgb, StandardFonts } = PDFLib;
-                const pdfDocLib = await PDFDocument.load(loadedPdfBytes);
-                const pages = pdfDocLib.getPages();
-                const defaultFont = await pdfDocLib.embedFont(StandardFonts.Helvetica);
+    for (const pNumStr in annotations) {
+      const pIdx = parseInt(pNumStr) - 1;
+      if (pIdx < 0 || pIdx >= pages.length) continue;
+      const page = pages[pIdx];
+      const { height } = page.getSize();
 
-                for (let pNum in annotations) {
-                    const pageIndex = parseInt(pNum) - 1;
-                    if (pageIndex >= pages.length) continue;
-                    const page = pages[pageIndex];
-                    const { width, height } = page.getSize();
-                    const currentViewport = page.getViewport({ scale: scale });
+      for (const a of annotations[pNumStr]) {
+        const font = await getFont(a.font);
+        const hex = a.color.replace('#', '');
+        const r = parseInt(hex.substring(0, 2), 16) / 255;
+        const g = parseInt(hex.substring(2, 4), 16) / 255;
+        const b = parseInt(hex.substring(4, 6), 16) / 255;
 
-                    annotations[pNum].forEach(item => {
-                        const pdfX = (item.x / currentViewport.width) * width;
-                        const pdfY = height - ((item.y / currentViewport.height) * height);
+        // x0,y0 are top-down coordinates at scale=1 (== PDF point units)
+        const pdfX = a.x0;
+        const pdfY = height - a.y0 - a.size * 0.85; // convert top-origin to PDF baseline
 
-                        let hex = item.color.replace('#', '');
-                        let r = parseInt(hex.substring(0, 2), 16) / 255;
-                        let g = parseInt(hex.substring(2, 4), 16) / 255;
-                        let b = parseInt(hex.substring(4, 6), 16) / 255;
+        page.drawText(a.text, { x: pdfX, y: pdfY, size: a.size, font, color: rgb(r, g, b) });
+      }
+    }
 
-                        page.drawText(item.text, {
-                            x: pdfX,
-                            y: pdfY,
-                            size: item.size,
-                            font: defaultFont,
-                            color: rgb(r, g, b),
-                        });
-                    });
-                }
+    const outBytes = await doc.save();
+    const blob = new Blob([outBytes], { type: 'application/pdf' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'edited-document.pdf';
+    link.click();
+  } catch (err) {
+    console.error(err);
+    alert('PDF save karte waqt error aaya: ' + err.message);
+  }
+});
 
-                const modifiedPdfBytes = await pdfDocLib.save();
-                const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
-                const link = document.createElement('a');
-                link.href = URL.createObjectURL(blob);
-                link.download = 'excel-edited-document.pdf';
-                link.click();
-            } catch (err) {
-                alert("PDF save karne mein error aaya hai.");
-                console.error(err);
-            }
-        });
-    </script>
+window.addEventListener('resize', () => { if (pdfDoc) renderPage(pageNum); });
+</script>
 </body>
 </html>
