@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Excel Style PDF Editor - ToolsHub</title>
+    <title>Excel Ribbon PDF Studio - ToolsHub</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- PDF.js -->
@@ -11,112 +11,139 @@
     <!-- PDF-lib -->
     <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
     <style>
-        .excel-ribbon-tab { padding: 4px 12px; cursor: pointer; border-bottom: 2px solid transparent; }
-        .excel-ribbon-tab.active { border-bottom: 2px solid #107c41; color: #107c41; font-weight: bold; }
+        .excel-tab { padding: 4px 14px; cursor: pointer; border-bottom: 2px solid transparent; font-size: 12px; }
+        .excel-tab.active { border-bottom: 2px solid #107c41; color: #107c41; font-weight: bold; background: white; }
+        .ribbon-group { display: flex; align-items: center; border-right: 1px solid #d1d5db; padding-right: 10px; margin-right: 10px; height: 55px; }
+        .ribbon-btn { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 4px 8px; border-radius: 4px; font-size: 11px; color: #374151; transition: background 0.2s; cursor: pointer; }
+        .ribbon-btn:hover { background-color: #e5e7eb; }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans select-none flex flex-col">
+<body class="bg-gray-200 min-h-screen font-sans select-none flex flex-col">
 
-    <!-- Excel Title & Top Bar -->
-    <div class="bg-[#107c41] text-white px-3 py-1.5 flex justify-between items-center text-xs shadow">
-        <div class="flex items-center space-x-3">
-            <span class="font-bold text-sm">🟢 Excel PDF Studio</span>
-            <span class="bg-[#0b5c2f] px-2 py-0.5 rounded text-[11px]">Book1 - Excel</span>
+    <!-- Top Excel Title Bar -->
+    <div class="bg-[#107c41] text-white px-3 py-1 flex justify-between items-center text-xs shadow-sm">
+        <div class="flex items-center space-x-2">
+            <span class="font-bold text-sm">📊 Excel PDF Studio</span>
+            <span class="bg-[#0b5c2f] px-2 py-0.5 rounded text-[10px]">Book1.xlsx - Excel (PDF Mode)</span>
         </div>
         <div>
-            <a href="index.html" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition">Home</a>
+            <a href="index.html" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition">Home Hub</a>
         </div>
     </div>
 
-    <!-- Excel Ribbon Menu -->
-    <div class="bg-white border-b border-gray-300 shadow-sm">
-        <!-- Tabs Header -->
-        <div class="flex px-3 text-xs font-medium text-gray-700 space-x-1 border-b border-gray-200 bg-gray-50 overflow-x-auto">
-            <div class="excel-ribbon-tab">File</div>
-            <div class="excel-ribbon-tab active">Home</div>
-            <div class="excel-ribbon-tab">Insert</div>
-            <div class="excel-ribbon-tab">Draw</div>
-            <div class="excel-ribbon-tab">Page Layout</div>
-            <div class="excel-ribbon-tab">Formulas</div>
-            <div class="excel-ribbon-tab">Data</div>
-            <div class="excel-ribbon-tab">Review</div>
-            <div class="excel-ribbon-tab">View</div>
-            <div class="excel-ribbon-tab">Automate</div>
-            <div class="excel-ribbon-tab">Developer</div>
-            <div class="excel-ribbon-tab">Help</div>
+    <!-- Excel Ribbon Menu Header -->
+    <div class="bg-[#f3f3f3] border-b border-gray-300 shadow-sm">
+        <!-- Tabs Navigation -->
+        <div class="flex px-2 text-gray-700 bg-[#fbfbfb] border-b border-gray-200 overflow-x-auto">
+            <div class="excel-tab">File</div>
+            <div class="excel-tab active" onclick="switchTab(event, 'homeTabContent')">Home</div>
+            <div class="excel-tab" onclick="switchTab(event, 'insertTabContent')">Insert</div>
+            <div class="excel-tab" onclick="switchTab(event, 'pageLayoutTabContent')">Page Layout</div>
+            <div class="excel-tab" onclick="switchTab(event, 'formulasTabContent')">Formulas</div>
+            <div class="excel-tab" onclick="switchTab(event, 'dataTabContent')">Data</div>
+            <div class="excel-tab" onclick="switchTab(event, 'reviewTabContent')">Review</div>
+            <div class="excel-tab" onclick="switchTab(event, 'viewTabContent')">View</div>
         </div>
 
-        <!-- Ribbon Toolbar Controls (Home Tab) -->
-        <div class="p-2 bg-gray-100 flex flex-wrap items-center gap-3 text-xs border-b border-gray-300">
-            <!-- Clipboard / Undo Redo -->
-            <div class="flex items-center space-x-1 border-r pr-3 border-gray-300">
-                <button id="undoBtn" class="px-2 py-1 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Undo">
-                    <span class="text-sm font-bold leading-none">↩</span> Undo
-                </button>
-                <button id="redoBtn" class="px-2 py-1 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Redo">
-                    <span class="text-sm font-bold leading-none">↪</span> Redo
-                </button>
+        <!-- Ribbon Toolbar Body (Excel Style Groups) -->
+        <div id="homeTabContent" class="p-2 bg-[#f3f3f3] flex flex-wrap items-center gap-1 text-xs">
+            
+            <!-- Clipboard Group -->
+            <div class="ribbon-group">
+                <div class="flex flex-col space-y-1">
+                    <button id="undoBtn" class="ribbon-btn h-6 flex-row gap-1" title="Undo Last Action">
+                        <span class="text-sm font-bold text-blue-600">↩</span> Undo
+                    </button>
+                    <button id="redoBtn" class="ribbon-btn h-6 flex-row gap-1" title="Redo Action">
+                        <span class="text-sm font-bold text-blue-600">↪</span> Redo
+                    </button>
+                </div>
             </div>
 
-            <!-- Font Formatting -->
-            <div class="flex items-center space-x-2 border-r pr-3 border-gray-300">
-                <select id="fontFamily" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white">
-                    <option value="Helvetica">Aptos Narrow</option>
-                    <option value="Helvetica">Helvetica</option>
-                    <option value="Times-Roman">Times New Roman</option>
-                    <option value="Courier">Courier New</option>
-                </select>
-                <select id="fontSize" class="border border-gray-300 rounded px-1 py-1 text-xs bg-white w-14 text-center">
-                    <option value="10">10</option>
-                    <option value="12" selected>12</option>
-                    <option value="14">14</option>
-                    <option value="16">16</option>
-                    <option value="18">18</option>
-                    <option value="24">24</option>
-                </select>
-                <input type="color" id="textColor" value="#000000" class="h-6 w-6 border border-gray-300 rounded cursor-pointer p-0 bg-white" title="Text Color">
+            <!-- Font Formatting Group -->
+            <div class="ribbon-group">
+                <div class="flex flex-col space-y-1">
+                    <div class="flex items-center space-x-1">
+                        <select id="fontFamily" class="border border-gray-300 rounded px-1.5 py-0.5 text-xs bg-white w-28">
+                            <option value="Helvetica">Aptos Narrow</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Times-Roman">Times New Roman</option>
+                            <option value="Courier">Courier New</option>
+                        </select>
+                        <select id="fontSize" class="border border-gray-300 rounded px-1 py-0.5 text-xs bg-white w-14 text-center">
+                            <option value="10">10px</option>
+                            <option value="12" selected>12px</option>
+                            <option value="14">14px</option>
+                            <option value="16">16px</option>
+                            <option value="18">18px</option>
+                            <option value="24">24px</option>
+                        </select>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[10px] font-semibold text-gray-500">Color:</span>
+                            <input type="color" id="textColor" value="#000000" class="h-5 w-7 border border-gray-300 rounded cursor-pointer p-0 bg-white" title="Text Color">
+                        </div>
+                    </div>
+                </div>
             </div>
 
-            <!-- Text & Navigation -->
-            <div class="flex items-center space-x-2 border-r pr-3 border-gray-300">
-                <input type="text" id="textInput" placeholder="Yahan text likhein..." class="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#107c41] w-40 bg-white">
-                <select id="pageSelect" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white"></select>
+            <!-- Text Input & Navigation Group -->
+            <div class="ribbon-group">
+                <div class="flex flex-col space-y-1">
+                    <label class="text-[10px] font-semibold text-gray-600">PDF Add Text:</label>
+                    <div class="flex items-center space-x-2">
+                        <input type="text" id="textInput" value="Verified Text" class="border border-gray-300 rounded px-2 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-[#107c41] w-36 bg-white">
+                        <select id="pageSelect" class="border border-gray-300 rounded px-2 py-0.5 text-xs bg-white" title="Select Page"></select>
+                    </div>
+                </div>
             </div>
 
-            <!-- Action Buttons -->
+            <!-- Action & Output Group (Excel Cells / Download) -->
             <div class="flex items-center gap-2 ml-auto">
-                <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold shadow transition">Clear Page</button>
-                <button id="savePdfBtn" class="bg-[#107c41] hover:bg-[#0b5c2f] text-white px-4 py-1 rounded text-xs font-semibold shadow transition flex items-center gap-1">📥 Download PDF</button>
+                <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold shadow transition flex items-center gap-1">
+                    🗑️ Clear Page
+                </button>
+                <button id="savePdfBtn" class="bg-[#107c41] hover:bg-[#0b5c2f] text-white px-4 py-1.5 rounded text-xs font-semibold shadow transition flex items-center gap-1">
+                    📥 Download Edited PDF
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Main Workspace -->
-    <main class="flex-grow container mx-auto px-4 py-4 max-w-6xl flex flex-col">
-        <!-- Upload Box -->
-        <div id="uploadSection" class="bg-white rounded-lg shadow p-6 mb-4 text-center border border-gray-300">
-            <h2 class="text-base font-semibold text-gray-800 mb-2">Apni PDF File Upload Karein</h2>
+    <!-- Main Workspace Area -->
+    <main class="flex-grow container mx-auto px-4 py-4 max-w-5xl flex flex-col">
+        <!-- Upload Card -->
+        <div id="uploadSection" class="bg-white rounded-lg shadow-md p-6 mb-4 text-center border border-gray-300">
+            <h2 class="text-base font-bold text-gray-800 mb-2">Apni PDF File Select Karein</h2>
             <input type="file" id="pdfUpload" accept="application/pdf" class="block mx-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-[#107c41] hover:file:bg-green-100 cursor-pointer">
         </div>
 
-        <!-- Canvas Container with Proper Responsive Fit -->
-        <div id="editorSection" class="relative bg-white border border-gray-300 shadow-md rounded-lg overflow-auto flex-grow flex justify-center p-4 hidden min-h-[600px]">
-            <canvas id="pdfCanvas" class="shadow-lg cursor-crosshair bg-white"></canvas>
+        <!-- Canvas PDF Viewer & Editor -->
+        <div id="editorSection" class="relative bg-gray-500 border border-gray-400 shadow-xl rounded-lg overflow-auto flex-grow flex justify-center p-4 hidden min-h-[650px]">
+            <canvas id="pdfCanvas" class="shadow-2xl cursor-crosshair bg-white"></canvas>
         </div>
     </main>
 
-    <!-- Script Logic -->
+    <!-- Script Application Logic -->
     <script>
         let loadedPdfBytes = null;
         let pdfDoc = null;
         let pageNum = 1;
-        let scale = 1.25; // Adjusted scale for clear viewing
+        let scale = 1.35; // Optimized scale for clear text display
         let canvas = document.getElementById('pdfCanvas');
         let ctx = canvas.getContext('2d');
         let annotations = {};
         let redoStack = {};
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        function switchTab(evt, tabId) {
+            // Simulated tab switching behavior like Excel ribbon
+            let tabs = document.querySelectorAll('.excel-tab');
+            tabs.forEach(t => t.classList.remove('active'));
+            evt.currentTarget.classList.add('active');
+        }
 
         document.getElementById('pdfUpload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
@@ -134,7 +161,7 @@
                     for (let i = 1; i <= pdfDoc.numPages; i++) {
                         let opt = document.createElement('option');
                         opt.value = i;
-                        opt.innerText = `Page ${i} of ${pdfDoc.numPages}`;
+                        opt.innerText = `Page ${i} / ${pdfDoc.numPages}`;
                         pageSelect.appendChild(opt);
                     }
 
@@ -185,7 +212,7 @@
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
-            const text = document.getElementById('textInput').value || "Sample Text";
+            const text = document.getElementById('textInput').value || "Sample";
             const size = parseInt(document.getElementById('fontSize').value);
             const color = document.getElementById('textColor').value;
             const fontFamily = document.getElementById('fontFamily').value;
@@ -196,7 +223,7 @@
             annotations[pageNum].push({ text, x, y, size, color, fontFamily });
             
             if (!redoStack[pageNum]) redoStack[pageNum] = [];
-            redoStack[pageNum] = [];
+            redoStack[pageNum] = []; // Clear redo stack on new addition
 
             renderPage(pageNum);
         });
@@ -269,7 +296,7 @@
                 const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = 'edited-document.pdf';
+                link.download = 'excel-edited-document.pdf';
                 link.click();
             } catch (err) {
                 alert("PDF save karne mein error aaya hai.");
