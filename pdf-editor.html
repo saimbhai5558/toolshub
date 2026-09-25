@@ -26,6 +26,7 @@
         <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">Apni PDF File Upload Karein</h2>
             <input type="file" id="pdfUpload" accept="application/pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+            <p id="statusText" class="text-xs text-gray-500 mt-2">Koi bhi PDF file select karein...</p>
         </div>
 
         <!-- Editor Workspace -->
@@ -67,25 +68,33 @@
             const file = e.target.files[0];
             if (!file) return;
 
+            document.getElementById('statusText').innerText = "PDF load ho rahi hai, intezaar karein...";
+
             const reader = new FileReader();
             reader.onload = async function() {
-                loadedPdfBytes = new Uint8Array(this.result);
-                const loadingTask = pdfjsLib.getDocument(loadedPdfBytes);
-                pdfDoc = await loadingTask.promise;
-                
-                let pageSelect = document.getElementById('pageSelect');
-                pageSelect.innerHTML = '';
-                for (let i = 1; i <= pdfDoc.numPages; i++) {
-                    let opt = document.createElement('option');
-                    opt.value = i;
-                    opt.innerText = `Page ${i} of ${pdfDoc.numPages}`;
-                    pageSelect.appendChild(opt);
-                }
+                try {
+                    loadedPdfBytes = new Uint8Array(this.result);
+                    const loadingTask = pdfjsLib.getDocument(loadedPdfBytes);
+                    pdfDoc = await loadingTask.promise;
+                    
+                    let pageSelect = document.getElementById('pageSelect');
+                    pageSelect.innerHTML = '';
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        let opt = document.createElement('option');
+                        opt.value = i;
+                        opt.innerText = `Page ${i} of ${pdfDoc.numPages}`;
+                        pageSelect.appendChild(opt);
+                    }
 
-                annotations = {};
-                pageNum = 1;
-                document.getElementById('editorSection').classList.remove('hidden');
-                renderPage(pageNum);
+                    annotations = {};
+                    pageNum = 1;
+                    document.getElementById('editorSection').classList.remove('hidden');
+                    document.getElementById('statusText').innerText = "PDF kamyabi se load ho gayi hai!";
+                    renderPage(pageNum);
+                } catch (error) {
+                    alert("PDF load karne mein masla hua hai. Shayed file kharab ya password protected hai.");
+                    console.error(error);
+                }
             };
             reader.readAsArrayBuffer(file);
         });
@@ -136,34 +145,39 @@
         document.getElementById('savePdfBtn').addEventListener('click', async function() {
             if (!loadedPdfBytes) return;
 
-            const { PDFDocument, rgb } = PDFLib;
-            const pdfDocLib = await PDFDocument.load(loadedPdfBytes);
-            const pages = pdfDocLib.getPages();
+            try {
+                const { PDFDocument, rgb } = PDFLib;
+                const pdfDocLib = await PDFDocument.load(loadedPdfBytes);
+                const pages = pdfDocLib.getPages();
 
-            for (let pNum in annotations) {
-                const pageIndex = parseInt(pNum) - 1;
-                const page = pages[pageIndex];
-                const { height } = page.getSize();
+                for (let pNum in annotations) {
+                    const pageIndex = parseInt(pNum) - 1;
+                    const page = pages[pageIndex];
+                    const { height } = page.getSize();
 
-                annotations[pNum].forEach(item => {
-                    const pdfX = item.x / scale;
-                    const pdfY = height - (item.y / scale);
+                    annotations[pNum].forEach(item => {
+                        const pdfX = item.x / scale;
+                        const pdfY = height - (item.y / scale);
 
-                    page.drawText(item.text, {
-                        x: pdfX,
-                        y: pdfY,
-                        size: 14,
-                        color: rgb(1, 0, 0),
+                        page.drawText(item.text, {
+                            x: pdfX,
+                            y: pdfY,
+                            size: 14,
+                            color: rgb(1, 0, 0),
+                        });
                     });
-                });
-            }
+                }
 
-            const modifiedPdfBytes = await pdfDocLib.save();
-            const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = 'edited-document.pdf';
-            link.click();
+                const modifiedPdfBytes = await pdfDocLib.save();
+                const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'edited-document.pdf';
+                link.click();
+            } catch (err) {
+                alert("PDF save karne mein error aaya hai.");
+                console.error(err);
+            }
         });
     </script>
 </body>
