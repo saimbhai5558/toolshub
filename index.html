@@ -1,9 +1,83 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Meri Website</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ToolsHub - Free Online Tools & Utilities</title>
+    <!-- Tailwind CSS for WordPress-like modern design -->
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
-    <h1>Hello World! Yeh meri pehli website hai.</h1>
+<body class="bg-gray-100 font-sans min-h-screen flex flex-col">
+
+    <!-- Top Bar / Navigation (WordPress Style Header) -->
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-4 flex justify-between items-center">
+            <a href="index.html" class="text-2xl font-bold text-indigo-600">ToolsHub</a>
+            <nav class="space-x-6 hidden md:flex">
+                <a href="index.html" class="text-gray-700 hover:text-indigo-600 font-medium">Home</a>
+                <a href="#tools" class="text-gray-700 hover:text-indigo-600 font-medium">All Tools</a>
+                <a href="#about" class="text-gray-700 hover:text-indigo-600 font-medium">About</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section (WordPress Banner) -->
+    <section class="bg-indigo-600 text-white py-16 text-center">
+        <div class="container mx-auto px-4">
+            <h1 class="text-4xl font-bold mb-4">Aapke Rozmarra ke Tamam Online Tools</h1>
+            <p class="text-indigo-200 text-lg max-w-2xl mx-auto">Yahan aapko PDF editor, converters aur muft utilities ek hi jagah par milengi.</p>
+        </div>
+    </section>
+
+    <!-- Main Container with Sidebar (WordPress Layout) -->
+    <div class="container mx-auto px-4 py-8 flex-grow grid grid-cols-1 lg:grid-cols-4 gap-8">
+        
+        <!-- Main Content Area (Left 3 Columns) -->
+        <main class="lg:col-span-3">
+            <h2 class="text-2xl font-bold text-gray-800 mb-6 border-b pb-2" id="tools">Popular Tools & Categories</h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Tool Card 1 -->
+                <div class="bg-white rounded-lg shadow p-6 border border-gray-200 hover:shadow-md transition">
+                    <span class="text-xs bg-indigo-100 text-indigo-700 px-2.5 py-1 rounded-full font-semibold">PDF</span>
+                    <h3 class="text-xl font-bold text-gray-800 mt-3 mb-2">Online PDF Editor</h3>
+                    <p class="text-gray-600 text-sm mb-4">Apni PDF file upload karein, text add karein aur foran download karein.</p>
+                    <a href="pdf-editor.html" class="inline-block bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded text-sm font-medium transition">Use Tool</a>
+                </div>
+
+                <!-- Tool Card 2 (Placeholder for next tool) -->
+                <div class="bg-white rounded-lg shadow p-6 border border-gray-200 hover:shadow-md transition">
+                    <span class="text-xs bg-green-100 text-green-700 px-2.5 py-1 rounded-full font-semibold">Utilities</span>
+                    <h3 class="text-xl font-bold text-gray-800 mt-3 mb-2">Coming Soon Tool</h3>
+                    <p class="text-gray-600 text-sm mb-4">Jald hi yahan naya tool shamil kiya jayega.</p>
+                    <span class="text-gray-400 text-sm">Stay Tuned</span>
+                </div>
+            </div>
+        </main>
+
+        <!-- Sidebar (Right 1 Column - WordPress Style Sidebar) -->
+        <aside class="space-y-6">
+            <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
+                <h3 class="font-bold text-gray-800 mb-3 border-b pb-2">Categories</h3>
+                <ul class="space-y-2 text-sm text-gray-600">
+                    <li><a href="#" class="hover:text-indigo-600">📄 PDF Tools</a></li>
+                    <li><a href="#" class="hover:text-indigo-600">🛠️ Text Utilities</a></li>
+                    <li><a href="#" class="hover:text-indigo-600">💻 Developer Tools</a></li>
+                </ul>
+            </div>
+
+            <div class="bg-white rounded-lg shadow p-6 border border-gray-200">
+                <h3 class="font-bold text-gray-800 mb-3 border-b pb-2">About Site</h3>
+                <p class="text-xs text-gray-600 leading-relaxed">Yeh website GitHub Pages par host ki gayi hai jo bilkul fast aur free hai.</p>
+            </div>
+        </aside>
+
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-6 text-center text-sm">
+        <p>&copy; 2026 ToolsHub. All rights reserved.</p>
+    </footer>
+
 </body>
 </html>
