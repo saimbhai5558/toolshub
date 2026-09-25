@@ -3,97 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free Online PDF Editor - ToolsHub</title>
+    <title>Excel Style PDF Editor - ToolsHub</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- PDF-lib for easy and direct PDF manipulation -->
+    <!-- PDF.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <!-- PDF-lib -->
     <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen font-sans">
+<body class="bg-gray-100 min-h-screen font-sans">
 
     <!-- Header -->
     <header class="bg-indigo-600 text-white py-4 shadow-md">
         <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">ToolsHub - PDF Editor</h1>
+            <h1 class="text-xl font-bold">ToolsHub - Excel Style PDF Editor</h1>
             <a href="index.html" class="text-sm bg-indigo-700 hover:bg-indigo-800 px-3 py-1.5 rounded transition">Home</a>
         </div>
     </header>
 
     <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 max-w-xl">
-        <div class="bg-white rounded-xl shadow-lg p-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">PDF Text Adder Tool</h2>
-            <p class="text-sm text-gray-600 mb-4">Apni PDF file select karein aur jo text aapko add karna hai wo niche likhein.</p>
+    <main class="container mx-auto px-4 py-8 max-w-5xl">
+        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">PDF File Upload Karein</h2>
+            <input type="file" id="pdfUpload" accept="application/pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+        </div>
+
+        <!-- Editor Workspace with Excel Ribbon -->
+        <div id="editorSection" class="bg-white rounded-xl shadow-lg p-6 hidden">
             
-            <div class="mb-4">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Add Honay Wala Text:</label>
-                <input type="text" id="textInput" value="Verified / Signed" class="w-full border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <!-- Excel Style Ribbon Menu -->
+            <div class="bg-gray-50 border border-gray-300 rounded-lg p-3 mb-4 flex flex-wrap items-center gap-3 shadow-sm">
+                <!-- Undo / Redo Buttons -->
+                <div class="flex items-center gap-1 border-r pr-3">
+                    <button id="undoBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2.5 py-1.5 rounded text-xs font-bold shadow-sm transition" title="Undo">↩ Undo</button>
+                    <button id="redoBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2.5 py-1.5 rounded text-xs font-bold shadow-sm transition" title="Redo">↪ Redo</button>
+                </div>
+
+                <!-- Text Input -->
+                <div class="flex flex-col">
+                    <label class="text-xs font-semibold text-gray-600 mb-1">Text Likhein:</label>
+                    <input type="text" id="textInput" value="Sample Text" class="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36">
+                </div>
+
+                <!-- Font Size -->
+                <div class="flex flex-col">
+                    <label class="text-xs font-semibold text-gray-600 mb-1">Font Size:</label>
+                    <select id="fontSize" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
+                        <option value="10">10px</option>
+                        <option value="12" selected>12px</option>
+                        <option value="14">14px</option>
+                        <option value="16">16px</option>
+                        <option value="18">18px</option>
+                        <option value="24">24px</option>
+                    </select>
+                </div>
+
+                <!-- Text Color -->
+                <div class="flex flex-col">
+                    <label class="text-xs font-semibold text-gray-600 mb-1">Color:</label>
+                    <input type="color" id="textColor" value="#000000" class="h-8 w-10 border border-gray-300 rounded cursor-pointer bg-white p-0.5">
+                </div>
+
+                <!-- Page Selector -->
+                <div class="flex flex-col">
+                    <label class="text-xs font-semibold text-gray-600 mb-1">Page:</label>
+                    <select id="pageSelect" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white"></select>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-end gap-2 ml-auto">
+                    <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-sm font-medium shadow transition">Clear</button>
+                    <button id="savePdfBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded text-sm font-medium shadow transition">Download PDF</button>
+                </div>
             </div>
 
-            <div class="mb-6">
-                <label class="block text-sm font-medium text-gray-700 mb-1">PDF File Select Karein:</label>
-                <input type="file" id="pdfUpload" accept="application/pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
-            </div>
+            <p class="text-xs text-gray-500 mb-2">💡 Tips: Excel ki tarah Undo (↩) aur Redo (↪) buttons se aap apne actions control kar sakte hain.</p>
 
-            <button id="processBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2.5 rounded font-medium shadow transition hidden">PDF Me Text Add Karke Download Karein</button>
-            <p id="statusText" class="text-xs text-center text-gray-500 mt-3"></p>
+            <!-- Canvas Container -->
+            <div class="relative border border-gray-300 inline-block shadow-inner overflow-auto max-h-[750px] w-full flex justify-center bg-gray-200 p-4">
+                <canvas id="pdfCanvas" class="shadow-lg cursor-crosshair bg-white"></canvas>
+            </div>
         </div>
     </main>
 
     <!-- Script -->
     <script>
-        let selectedFileBytes = null;
+        let loadedPdfBytes = null;
+        let pdfDoc = null;
+        let pageNum = 1;
+        let scale = 1.5;
+        let canvas = document.getElementById('pdfCanvas');
+        let ctx = canvas.getContext('2d');
+        let annotations = {};
+        let redoStack = {}; // To manage redo actions
 
-        document.getElementById('pdfUpload').addEventListener('change', function(e) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+        document.getElementById('pdfUpload').addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (!file) return;
 
-            document.getElementById('statusText').innerText = "File read ho rahi hai...";
             const reader = new FileReader();
-            reader.onload = function() {
-                selectedFileBytes = new Uint8Array(this.result);
-                document.getElementById('processBtn').classList.remove('hidden');
-                document.getElementById('statusText').innerText = "File tayar hai! Neeche green button dabayein.";
+            reader.onload = async function() {
+                loadedPdfBytes = new Uint8Array(this.result);
+                const loadingTask = pdfjsLib.getDocument(loadedPdfBytes);
+                pdfDoc = await loadingTask.promise;
+                
+                let pageSelect = document.getElementById('pageSelect');
+                pageSelect.innerHTML = '';
+                for (let i = 1; i <= pdfDoc.numPages; i++) {
+                    let opt = document.createElement('option');
+                    opt.value = i;
+                    opt.innerText = `Page ${i} / ${pdfDoc.numPages}`;
+                    pageSelect.appendChild(opt);
+                }
+
+                annotations = {};
+                redoStack = {};
+                pageNum = 1;
+                document.getElementById('editorSection').classList.remove('hidden');
+                renderPage(pageNum);
             };
             reader.readAsArrayBuffer(file);
         });
 
-        document.getElementById('processBtn').addEventListener('click', async function() {
-            if (!selectedFileBytes) return;
+        document.getElementById('pageSelect').addEventListener('change', function() {
+            pageNum = parseInt(this.value);
+            renderPage(pageNum);
+        });
+
+        async function renderPage(num) {
+            const page = await pdfDoc.getPage(num);
+            const viewport = page.getViewport({ scale: scale });
+            canvas.height = viewport.height;
+            canvas.width = viewport.width;
+
+            const renderContext = {
+                canvasContext: ctx,
+                viewport: viewport
+            };
+            await page.render(renderContext).promise;
+            drawAnnotations(num);
+        }
+
+        function drawAnnotations(pNum) {
+            if (annotations[pNum]) {
+                annotations[pNum].forEach(item => {
+                    ctx.font = `${item.size * scale}px Helvetica`;
+                    ctx.fillStyle = item.color;
+                    ctx.fillText(item.text, item.x, item.y);
+                });
+            }
+        }
+
+        canvas.addEventListener('click', function(event) {
+            if (!pdfDoc) return;
+            const rect = canvas.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const y = event.clientY - rect.top;
+            const text = document.getElementById('textInput').value;
+            const size = parseInt(document.getElementById('fontSize').value);
+            const color = document.getElementById('textColor').value;
+
+            if (!annotations[pageNum]) {
+                annotations[pageNum] = [];
+            }
+            annotations[pageNum].push({ text, x, y, size, color });
+            
+            // Clear redo stack on new action
+            if (!redoStack[pageNum]) redoStack[pageNum] = [];
+            redoStack[pageNum] = [];
+
+            renderPage(pageNum);
+        });
+
+        // Undo functionality
+        document.getElementById('undoBtn').addEventListener('click', function() {
+            if (annotations[pageNum] && annotations[pageNum].length > 0) {
+                if (!redoStack[pageNum]) redoStack[pageNum] = [];
+                let removed = annotations[pageNum].pop();
+                redoStack[pageNum].push(removed);
+                renderPage(pageNum);
+            }
+        });
+
+        // Redo functionality
+        document.getElementById('redoBtn').addEventListener('click', function() {
+            if (redoStack[pageNum] && redoStack[pageNum].length > 0) {
+                if (!annotations[pageNum]) annotations[pageNum] = [];
+                let restored = redoStack[pageNum].pop();
+                annotations[pageNum].push(restored);
+                renderPage(pageNum);
+            }
+        });
+
+        document.getElementById('clearBtn').addEventListener('click', function() {
+            if (annotations[pageNum]) {
+                annotations[pageNum] = [];
+                redoStack[pageNum] = [];
+                renderPage(pageNum);
+            }
+        });
+
+        document.getElementById('savePdfBtn').addEventListener('click', async function() {
+            if (!loadedPdfBytes) return;
 
             try {
-                document.getElementById('statusText').innerText = "Processing ho rahi hai...";
-                const { PDFDocument, rgb } = PDFLib;
-                
-                // Load the PDF
-                const pdfDoc = await PDFDocument.load(selectedFileBytes);
-                const textToAdd = document.getElementById('textInput').value;
+                const { PDFDocument, rgb, StandardFonts } = PDFLib;
+                const pdfDocLib = await PDFDocument.load(loadedPdfBytes);
+                const pages = pdfDocLib.getPages();
+                const customFont = await pdfDocLib.embedFont(StandardFonts.Helvetica);
 
-                // Get the first page (or all pages) and add text at the top-left or custom position
-                const pages = pdfDoc.getPages();
-                const firstPage = pages[0];
-                const { width, height } = firstPage.getSize();
+                for (let pNum in annotations) {
+                    const pageIndex = parseInt(pNum) - 1;
+                    const page = pages[pageIndex];
+                    const { width, height } = page.getSize();
+                    const currentViewport = page.getViewport({ scale: scale });
 
-                firstPage.drawText(textToAdd, {
-                    x: 50,
-                    y: height - 50, // Top margin
-                    size: 16,
-                    color: rgb(1, 0, 0), // Red color
-                });
+                    annotations[pNum].forEach(item => {
+                        const pdfX = (item.x / currentViewport.width) * width;
+                        const pdfY = height - ((item.y / currentViewport.height) * height);
 
-                // Save and trigger download
-                const pdfBytes = await pdfDoc.save();
-                const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+                        let hex = item.color.replace('#', '');
+                        let r = parseInt(hex.substring(0, 2), 16) / 255;
+                        let g = parseInt(hex.substring(2, 4), 16) / 255;
+                        let b = parseInt(hex.substring(4, 6), 16) / 255;
+
+                        page.drawText(item.text, {
+                            x: pdfX,
+                            y: pdfY,
+                            size: item.size,
+                            font: customFont,
+                            color: rgb(r, g, b),
+                        });
+                    });
+                }
+
+                const modifiedPdfBytes = await pdfDocLib.save();
+                const blob = new Blob([modifiedPdfBytes], { type: 'application/pdf' });
                 const link = document.createElement('a');
                 link.href = URL.createObjectURL(blob);
-                link.download = 'updated-document.pdf';
+                link.download = 'edited-document.pdf';
                 link.click();
-
-                document.getElementById('statusText').innerText = "Kamyabi se download ho gayi hai!";
-            } catch (error) {
-                alert("Error: PDF file load ya modify karne mein masla hua.");
-                console.error(error);
-                document.getElementById('statusText').innerText = "";
+            } catch (err) {
+                alert("PDF save karne mein error aaya hai.");
+                console.error(err);
             }
         });
     </script>
