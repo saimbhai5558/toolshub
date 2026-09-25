@@ -11,82 +11,106 @@
     <!-- PDF-lib -->
     <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans">
+<body class="bg-gray-100 min-h-screen font-sans select-none">
 
-    <!-- Header -->
-    <header class="bg-indigo-600 text-white py-4 shadow-md">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold">ToolsHub - Excel Style PDF Editor</h1>
-            <a href="index.html" class="text-sm bg-indigo-700 hover:bg-indigo-800 px-3 py-1.5 rounded transition">Home</a>
+    <!-- Excel Top Header Bar -->
+    <div class="bg-[#107c41] text-white px-4 py-2 flex justify-between items-center text-sm shadow">
+        <div class="flex items-center space-x-4">
+            <span class="font-bold flex items-center gap-1">📊 Excel PDF Studio</span>
+            <span class="text-xs bg-[#0b5c2f] px-2 py-0.5 rounded">Book1 - Excel</span>
         </div>
-    </header>
+        <div class="flex items-center space-x-3 text-xs">
+            <a href="index.html" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition">Home</a>
+        </div>
+    </div>
 
-    <!-- Main Content -->
-    <main class="container mx-auto px-4 py-8 max-w-5xl">
-        <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">PDF File Upload Karein</h2>
-            <input type="file" id="pdfUpload" accept="application/pdf" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 cursor-pointer">
+    <!-- Excel Ribbon Menu Tabs -->
+    <div class="bg-white border-b border-gray-300 shadow-sm">
+        <div class="flex px-4 text-xs font-medium text-gray-700 space-x-6 border-b border-gray-200 py-1 bg-gray-50 overflow-x-auto">
+            <span class="cursor-pointer hover:text-[#107c41]">File</span>
+            <span class="cursor-pointer text-[#107c41] font-bold border-b-2 border-[#107c41] pb-1">Home</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Insert</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Draw</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Page Layout</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Formulas</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Data</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Review</span>
+            <span class="cursor-pointer hover:text-[#107c41]">View</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Automate</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Developer</span>
+            <span class="cursor-pointer hover:text-[#107c41]">Help</span>
         </div>
 
-        <!-- Editor Workspace with Excel Ribbon -->
-        <div id="editorSection" class="bg-white rounded-xl shadow-lg p-6 hidden">
-            
-            <!-- Excel Style Ribbon Menu -->
-            <div class="bg-gray-50 border border-gray-300 rounded-lg p-3 mb-4 flex flex-wrap items-center gap-3 shadow-sm">
-                <!-- Undo / Redo Buttons -->
-                <div class="flex items-center gap-1 border-r pr-3">
-                    <button id="undoBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2.5 py-1.5 rounded text-xs font-bold shadow-sm transition" title="Undo">↩ Undo</button>
-                    <button id="redoBtn" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-2.5 py-1.5 rounded text-xs font-bold shadow-sm transition" title="Redo">↪ Redo</button>
-                </div>
+        <!-- Ribbon Toolbar (Home Tab Tools) -->
+        <div class="p-2 bg-gray-100 flex flex-wrap items-center gap-4 text-xs border-b border-gray-300">
+            <!-- Clipboard Group -->
+            <div class="flex items-center space-x-1 border-r pr-3 border-gray-300">
+                <button id="undoBtn" class="p-1.5 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Undo">
+                    <span class="text-sm font-bold">↩</span> Undo
+                </button>
+                <button id="redoBtn" class="p-1.5 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Redo">
+                    <span class="text-sm font-bold">↪</span> Redo
+                </button>
+            </div>
 
-                <!-- Text Input -->
+            <!-- Font Group -->
+            <div class="flex items-center space-x-2 border-r pr-3 border-gray-300">
                 <div class="flex flex-col">
-                    <label class="text-xs font-semibold text-gray-600 mb-1">Text Likhein:</label>
-                    <input type="text" id="textInput" value="Sample Text" class="border border-gray-300 rounded px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 w-36">
-                </div>
-
-                <!-- Font Size -->
-                <div class="flex flex-col">
-                    <label class="text-xs font-semibold text-gray-600 mb-1">Font Size:</label>
-                    <select id="fontSize" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white">
-                        <option value="10">10px</option>
-                        <option value="12" selected>12px</option>
-                        <option value="14">14px</option>
-                        <option value="16">16px</option>
-                        <option value="18">18px</option>
-                        <option value="24">24px</option>
+                    <select id="fontFamily" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white">
+                        <option value="Helvetica">Aptos Narrow</option>
+                        <option value="Helvetica">Helvetica</option>
+                        <option value="Times-Roman">Times New Roman</option>
+                        <option value="Courier">Courier New</option>
                     </select>
                 </div>
-
-                <!-- Text Color -->
                 <div class="flex flex-col">
-                    <label class="text-xs font-semibold text-gray-600 mb-1">Color:</label>
-                    <input type="color" id="textColor" value="#000000" class="h-8 w-10 border border-gray-300 rounded cursor-pointer bg-white p-0.5">
+                    <select id="fontSize" class="border border-gray-300 rounded px-1.5 py-1 text-xs bg-white w-14 text-center">
+                        <option value="10">10</option>
+                        <option value="12" selected>12</option>
+                        <option value="14">14</option>
+                        <option value="16">16</option>
+                        <option value="18">18</option>
+                        <option value="24">24</option>
+                    </select>
                 </div>
-
-                <!-- Page Selector -->
-                <div class="flex flex-col">
-                    <label class="text-xs font-semibold text-gray-600 mb-1">Page:</label>
-                    <select id="pageSelect" class="border border-gray-300 rounded px-2 py-1 text-sm bg-white"></select>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="flex items-end gap-2 ml-auto">
-                    <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-sm font-medium shadow transition">Clear</button>
-                    <button id="savePdfBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-1.5 rounded text-sm font-medium shadow transition">Download PDF</button>
+                <div class="flex items-center space-x-1">
+                    <input type="color" id="textColor" value="#000000" class="h-6 w-6 border border-gray-300 rounded cursor-pointer p-0 bg-white" title="Text Color">
                 </div>
             </div>
 
-            <p class="text-xs text-gray-500 mb-2">💡 Tips: Excel ki tarah Undo (↩) aur Redo (↪) buttons se aap apne actions control kar sakte hain.</p>
-
-            <!-- Canvas Container -->
-            <div class="relative border border-gray-300 inline-block shadow-inner overflow-auto max-h-[750px] w-full flex justify-center bg-gray-200 p-4">
-                <canvas id="pdfCanvas" class="shadow-lg cursor-crosshair bg-white"></canvas>
+            <!-- Text Input & Actions -->
+            <div class="flex items-center space-x-2">
+                <div class="flex flex-col">
+                    <input type="text" id="textInput" placeholder="Yahan text likhein..." class="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#107c41] w-40 bg-white">
+                </div>
+                <div class="flex flex-col">
+                    <select id="pageSelect" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white"></select>
+                </div>
             </div>
+
+            <!-- Global Action Buttons -->
+            <div class="flex items-center gap-2 ml-auto">
+                <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold shadow transition">Clear Page</button>
+                <button id="savePdfBtn" class="bg-[#107c41] hover:bg-[#0b5c2f] text-white px-4 py-1.5 rounded text-xs font-semibold shadow transition flex items-center gap-1">📥 Download PDF</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <main class="container mx-auto px-4 py-6 max-w-5xl">
+        <!-- Upload Box -->
+        <div id="uploadSection" class="bg-white rounded-lg shadow p-6 mb-6 text-center border border-gray-300">
+            <h2 class="text-lg font-semibold text-gray-800 mb-2">Apni PDF File Upload Karein</h2>
+            <input type="file" id="pdfUpload" accept="application/pdf" class="block mx-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-[#107c41] hover:file:bg-green-100 cursor-pointer">
+        </div>
+
+        <!-- Canvas Container -->
+        <div id="editorSection" class="relative bg-white border border-gray-300 shadow-md rounded-lg overflow-auto max-h-[750px] flex justify-center p-4 hidden">
+            <canvas id="pdfCanvas" class="shadow cursor-crosshair bg-white"></canvas>
         </div>
     </main>
 
-    <!-- Script -->
+    <!-- Script Logic -->
     <script>
         let loadedPdfBytes = null;
         let pdfDoc = null;
@@ -95,7 +119,7 @@
         let canvas = document.getElementById('pdfCanvas');
         let ctx = canvas.getContext('2d');
         let annotations = {};
-        let redoStack = {}; // To manage redo actions
+        let redoStack = {};
 
         pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
 
@@ -105,24 +129,29 @@
 
             const reader = new FileReader();
             reader.onload = async function() {
-                loadedPdfBytes = new Uint8Array(this.result);
-                const loadingTask = pdfjsLib.getDocument(loadedPdfBytes);
-                pdfDoc = await loadingTask.promise;
-                
-                let pageSelect = document.getElementById('pageSelect');
-                pageSelect.innerHTML = '';
-                for (let i = 1; i <= pdfDoc.numPages; i++) {
-                    let opt = document.createElement('option');
-                    opt.value = i;
-                    opt.innerText = `Page ${i} / ${pdfDoc.numPages}`;
-                    pageSelect.appendChild(opt);
-                }
+                try {
+                    loadedPdfBytes = new Uint8Array(this.result);
+                    const loadingTask = pdfjsLib.getDocument(loadedPdfBytes);
+                    pdfDoc = await loadingTask.promise;
+                    
+                    let pageSelect = document.getElementById('pageSelect');
+                    pageSelect.innerHTML = '';
+                    for (let i = 1; i <= pdfDoc.numPages; i++) {
+                        let opt = document.createElement('option');
+                        opt.value = i;
+                        opt.innerText = `Page ${i} of ${pdfDoc.numPages}`;
+                        pageSelect.appendChild(opt);
+                    }
 
-                annotations = {};
-                redoStack = {};
-                pageNum = 1;
-                document.getElementById('editorSection').classList.remove('hidden');
-                renderPage(pageNum);
+                    annotations = {};
+                    redoStack = {};
+                    pageNum = 1;
+                    document.getElementById('editorSection').classList.remove('hidden');
+                    renderPage(pageNum);
+                } catch (err) {
+                    alert("PDF load karne mein error aaya hai.");
+                    console.error(err);
+                }
             };
             reader.readAsArrayBuffer(file);
         });
@@ -149,7 +178,7 @@
         function drawAnnotations(pNum) {
             if (annotations[pNum]) {
                 annotations[pNum].forEach(item => {
-                    ctx.font = `${item.size * scale}px Helvetica`;
+                    ctx.font = `${item.size * scale}px ${item.fontFamily}`;
                     ctx.fillStyle = item.color;
                     ctx.fillText(item.text, item.x, item.y);
                 });
@@ -161,23 +190,22 @@
             const rect = canvas.getBoundingClientRect();
             const x = event.clientX - rect.left;
             const y = event.clientY - rect.top;
-            const text = document.getElementById('textInput').value;
+            const text = document.getElementById('textInput').value || "Sample Text";
             const size = parseInt(document.getElementById('fontSize').value);
             const color = document.getElementById('textColor').value;
+            const fontFamily = document.getElementById('fontFamily').value;
 
             if (!annotations[pageNum]) {
                 annotations[pageNum] = [];
             }
-            annotations[pageNum].push({ text, x, y, size, color });
+            annotations[pageNum].push({ text, x, y, size, color, fontFamily });
             
-            // Clear redo stack on new action
             if (!redoStack[pageNum]) redoStack[pageNum] = [];
             redoStack[pageNum] = [];
 
             renderPage(pageNum);
         });
 
-        // Undo functionality
         document.getElementById('undoBtn').addEventListener('click', function() {
             if (annotations[pageNum] && annotations[pageNum].length > 0) {
                 if (!redoStack[pageNum]) redoStack[pageNum] = [];
@@ -187,7 +215,6 @@
             }
         });
 
-        // Redo functionality
         document.getElementById('redoBtn').addEventListener('click', function() {
             if (redoStack[pageNum] && redoStack[pageNum].length > 0) {
                 if (!annotations[pageNum]) annotations[pageNum] = [];
@@ -206,13 +233,16 @@
         });
 
         document.getElementById('savePdfBtn').addEventListener('click', async function() {
-            if (!loadedPdfBytes) return;
+            if (!loadedPdfBytes) {
+                alert("Pehle koi PDF file upload karein!");
+                return;
+            }
 
             try {
                 const { PDFDocument, rgb, StandardFonts } = PDFLib;
                 const pdfDocLib = await PDFDocument.load(loadedPdfBytes);
                 const pages = pdfDocLib.getPages();
-                const customFont = await pdfDocLib.embedFont(StandardFonts.Helvetica);
+                const defaultFont = await pdfDocLib.embedFont(StandardFonts.Helvetica);
 
                 for (let pNum in annotations) {
                     const pageIndex = parseInt(pNum) - 1;
@@ -233,7 +263,7 @@
                             x: pdfX,
                             y: pdfY,
                             size: item.size,
-                            font: customFont,
+                            font: defaultFont,
                             color: rgb(r, g, b),
                         });
                     });
