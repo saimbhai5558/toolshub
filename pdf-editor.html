@@ -10,103 +10,98 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <!-- PDF-lib -->
     <script src="https://unpkg.com/pdf-lib@1.4.0/dist/pdf-lib.min.js"></script>
+    <style>
+        .excel-ribbon-tab { padding: 4px 12px; cursor: pointer; border-bottom: 2px solid transparent; }
+        .excel-ribbon-tab.active { border-bottom: 2px solid #107c41; color: #107c41; font-weight: bold; }
+    </style>
 </head>
-<body class="bg-gray-100 min-h-screen font-sans select-none">
+<body class="bg-gray-100 min-h-screen font-sans select-none flex flex-col">
 
-    <!-- Excel Top Header Bar -->
-    <div class="bg-[#107c41] text-white px-4 py-2 flex justify-between items-center text-sm shadow">
-        <div class="flex items-center space-x-4">
-            <span class="font-bold flex items-center gap-1">📊 Excel PDF Studio</span>
-            <span class="text-xs bg-[#0b5c2f] px-2 py-0.5 rounded">Book1 - Excel</span>
+    <!-- Excel Title & Top Bar -->
+    <div class="bg-[#107c41] text-white px-3 py-1.5 flex justify-between items-center text-xs shadow">
+        <div class="flex items-center space-x-3">
+            <span class="font-bold text-sm">🟢 Excel PDF Studio</span>
+            <span class="bg-[#0b5c2f] px-2 py-0.5 rounded text-[11px]">Book1 - Excel</span>
         </div>
-        <div class="flex items-center space-x-3 text-xs">
+        <div>
             <a href="index.html" class="bg-white/20 hover:bg-white/30 px-3 py-1 rounded transition">Home</a>
         </div>
     </div>
 
-    <!-- Excel Ribbon Menu Tabs -->
+    <!-- Excel Ribbon Menu -->
     <div class="bg-white border-b border-gray-300 shadow-sm">
-        <div class="flex px-4 text-xs font-medium text-gray-700 space-x-6 border-b border-gray-200 py-1 bg-gray-50 overflow-x-auto">
-            <span class="cursor-pointer hover:text-[#107c41]">File</span>
-            <span class="cursor-pointer text-[#107c41] font-bold border-b-2 border-[#107c41] pb-1">Home</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Insert</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Draw</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Page Layout</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Formulas</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Data</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Review</span>
-            <span class="cursor-pointer hover:text-[#107c41]">View</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Automate</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Developer</span>
-            <span class="cursor-pointer hover:text-[#107c41]">Help</span>
+        <!-- Tabs Header -->
+        <div class="flex px-3 text-xs font-medium text-gray-700 space-x-1 border-b border-gray-200 bg-gray-50 overflow-x-auto">
+            <div class="excel-ribbon-tab">File</div>
+            <div class="excel-ribbon-tab active">Home</div>
+            <div class="excel-ribbon-tab">Insert</div>
+            <div class="excel-ribbon-tab">Draw</div>
+            <div class="excel-ribbon-tab">Page Layout</div>
+            <div class="excel-ribbon-tab">Formulas</div>
+            <div class="excel-ribbon-tab">Data</div>
+            <div class="excel-ribbon-tab">Review</div>
+            <div class="excel-ribbon-tab">View</div>
+            <div class="excel-ribbon-tab">Automate</div>
+            <div class="excel-ribbon-tab">Developer</div>
+            <div class="excel-ribbon-tab">Help</div>
         </div>
 
-        <!-- Ribbon Toolbar (Home Tab Tools) -->
-        <div class="p-2 bg-gray-100 flex flex-wrap items-center gap-4 text-xs border-b border-gray-300">
-            <!-- Clipboard Group -->
+        <!-- Ribbon Toolbar Controls (Home Tab) -->
+        <div class="p-2 bg-gray-100 flex flex-wrap items-center gap-3 text-xs border-b border-gray-300">
+            <!-- Clipboard / Undo Redo -->
             <div class="flex items-center space-x-1 border-r pr-3 border-gray-300">
-                <button id="undoBtn" class="p-1.5 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Undo">
-                    <span class="text-sm font-bold">↩</span> Undo
+                <button id="undoBtn" class="px-2 py-1 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Undo">
+                    <span class="text-sm font-bold leading-none">↩</span> Undo
                 </button>
-                <button id="redoBtn" class="p-1.5 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Redo">
-                    <span class="text-sm font-bold">↪</span> Redo
+                <button id="redoBtn" class="px-2 py-1 hover:bg-gray-200 rounded flex flex-col items-center text-[10px]" title="Redo">
+                    <span class="text-sm font-bold leading-none">↪</span> Redo
                 </button>
             </div>
 
-            <!-- Font Group -->
+            <!-- Font Formatting -->
             <div class="flex items-center space-x-2 border-r pr-3 border-gray-300">
-                <div class="flex flex-col">
-                    <select id="fontFamily" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white">
-                        <option value="Helvetica">Aptos Narrow</option>
-                        <option value="Helvetica">Helvetica</option>
-                        <option value="Times-Roman">Times New Roman</option>
-                        <option value="Courier">Courier New</option>
-                    </select>
-                </div>
-                <div class="flex flex-col">
-                    <select id="fontSize" class="border border-gray-300 rounded px-1.5 py-1 text-xs bg-white w-14 text-center">
-                        <option value="10">10</option>
-                        <option value="12" selected>12</option>
-                        <option value="14">14</option>
-                        <option value="16">16</option>
-                        <option value="18">18</option>
-                        <option value="24">24</option>
-                    </select>
-                </div>
-                <div class="flex items-center space-x-1">
-                    <input type="color" id="textColor" value="#000000" class="h-6 w-6 border border-gray-300 rounded cursor-pointer p-0 bg-white" title="Text Color">
-                </div>
+                <select id="fontFamily" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white">
+                    <option value="Helvetica">Aptos Narrow</option>
+                    <option value="Helvetica">Helvetica</option>
+                    <option value="Times-Roman">Times New Roman</option>
+                    <option value="Courier">Courier New</option>
+                </select>
+                <select id="fontSize" class="border border-gray-300 rounded px-1 py-1 text-xs bg-white w-14 text-center">
+                    <option value="10">10</option>
+                    <option value="12" selected>12</option>
+                    <option value="14">14</option>
+                    <option value="16">16</option>
+                    <option value="18">18</option>
+                    <option value="24">24</option>
+                </select>
+                <input type="color" id="textColor" value="#000000" class="h-6 w-6 border border-gray-300 rounded cursor-pointer p-0 bg-white" title="Text Color">
             </div>
 
-            <!-- Text Input & Actions -->
-            <div class="flex items-center space-x-2">
-                <div class="flex flex-col">
-                    <input type="text" id="textInput" placeholder="Yahan text likhein..." class="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#107c41] w-40 bg-white">
-                </div>
-                <div class="flex flex-col">
-                    <select id="pageSelect" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white"></select>
-                </div>
+            <!-- Text & Navigation -->
+            <div class="flex items-center space-x-2 border-r pr-3 border-gray-300">
+                <input type="text" id="textInput" placeholder="Yahan text likhein..." class="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-1 focus:ring-[#107c41] w-40 bg-white">
+                <select id="pageSelect" class="border border-gray-300 rounded px-2 py-1 text-xs bg-white"></select>
             </div>
 
-            <!-- Global Action Buttons -->
+            <!-- Action Buttons -->
             <div class="flex items-center gap-2 ml-auto">
-                <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1.5 rounded text-xs font-semibold shadow transition">Clear Page</button>
-                <button id="savePdfBtn" class="bg-[#107c41] hover:bg-[#0b5c2f] text-white px-4 py-1.5 rounded text-xs font-semibold shadow transition flex items-center gap-1">📥 Download PDF</button>
+                <button id="clearBtn" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs font-semibold shadow transition">Clear Page</button>
+                <button id="savePdfBtn" class="bg-[#107c41] hover:bg-[#0b5c2f] text-white px-4 py-1 rounded text-xs font-semibold shadow transition flex items-center gap-1">📥 Download PDF</button>
             </div>
         </div>
     </div>
 
     <!-- Main Workspace -->
-    <main class="container mx-auto px-4 py-6 max-w-5xl">
+    <main class="flex-grow container mx-auto px-4 py-4 max-w-6xl flex flex-col">
         <!-- Upload Box -->
-        <div id="uploadSection" class="bg-white rounded-lg shadow p-6 mb-6 text-center border border-gray-300">
-            <h2 class="text-lg font-semibold text-gray-800 mb-2">Apni PDF File Upload Karein</h2>
+        <div id="uploadSection" class="bg-white rounded-lg shadow p-6 mb-4 text-center border border-gray-300">
+            <h2 class="text-base font-semibold text-gray-800 mb-2">Apni PDF File Upload Karein</h2>
             <input type="file" id="pdfUpload" accept="application/pdf" class="block mx-auto text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-50 file:text-[#107c41] hover:file:bg-green-100 cursor-pointer">
         </div>
 
-        <!-- Canvas Container -->
-        <div id="editorSection" class="relative bg-white border border-gray-300 shadow-md rounded-lg overflow-auto max-h-[750px] flex justify-center p-4 hidden">
-            <canvas id="pdfCanvas" class="shadow cursor-crosshair bg-white"></canvas>
+        <!-- Canvas Container with Proper Responsive Fit -->
+        <div id="editorSection" class="relative bg-white border border-gray-300 shadow-md rounded-lg overflow-auto flex-grow flex justify-center p-4 hidden min-h-[600px]">
+            <canvas id="pdfCanvas" class="shadow-lg cursor-crosshair bg-white"></canvas>
         </div>
     </main>
 
@@ -115,7 +110,7 @@
         let loadedPdfBytes = null;
         let pdfDoc = null;
         let pageNum = 1;
-        let scale = 1.5;
+        let scale = 1.25; // Adjusted scale for clear viewing
         let canvas = document.getElementById('pdfCanvas');
         let ctx = canvas.getContext('2d');
         let annotations = {};
@@ -246,6 +241,7 @@
 
                 for (let pNum in annotations) {
                     const pageIndex = parseInt(pNum) - 1;
+                    if (pageIndex >= pages.length) continue;
                     const page = pages[pageIndex];
                     const { width, height } = page.getSize();
                     const currentViewport = page.getViewport({ scale: scale });
